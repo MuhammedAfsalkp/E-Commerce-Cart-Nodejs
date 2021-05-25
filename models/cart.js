@@ -1,6 +1,6 @@
 const path = require("path");
 const fs = require("fs");
-const Product=require('./product')
+const productModel=require('./product')
 const p = path.join(
   path.dirname(process.mainModule.filename),
   "data",
@@ -9,20 +9,20 @@ const p = path.join(
 const getFilecontent = (callback) => {
   fs.readFile(p, (err, data) => {
     if (err) {
-      callback({ products: [], totalprice: 0 });
+      callback({ products: []});
     } else {
       let cart;
       try {
         cart = JSON.parse(data);
       } catch {
-        cart = { products: [], totalprice: 0 };
+        cart = { products: []};
       }
       callback(cart);
     }
   });
 };
 
-module.exports = class Cart {
+ class Cart {
   static addToCart(id, price, callback) {
     getFilecontent((cart) => {
       let existing = cart.products.find((prod) => id === prod.productId);
@@ -38,7 +38,6 @@ module.exports = class Cart {
         let updateItem = { productId: id, qty: 1 };
         cart.products = [...cart.products, updateItem];
       }
-      cart.totalprice = parseFloat(cart.totalprice) + parseFloat(price);
       fs.writeFile(p, JSON.stringify(cart), (err) => {
         if (err) {
           console.log(err, "writing cart");
@@ -77,11 +76,11 @@ module.exports = class Cart {
   static getCartData(cb) {
     getFilecontent((cart) => {
       console.log(cart)
-      if (cart == { products: [], totalprice: 0 }) {
+      if (cart == { products: []}) {
         cb([]);
       }
       let data = [];
-      Product.fetchall((product) => {
+      productModel.Product.fetchall((product) => {
         for (let c of cart.products) {
           let exist = product.find((val) => {
             return val.productId == c.productId;
@@ -97,6 +96,7 @@ module.exports = class Cart {
 
      
 };
+exports.Cart=Cart;
 
 
 

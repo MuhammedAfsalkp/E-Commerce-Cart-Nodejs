@@ -1,5 +1,6 @@
 const path = require("path");
 const fs = require("fs");
+const cartModel=require("./cart")
 const p = path.join(
   path.dirname(process.mainModule.filename),
   "data",
@@ -23,7 +24,7 @@ const getFilecontent = (callback) => {
   });
 };
 
-  module.exports =      class Product {
+      class Product {
   constructor(productId, title, imageurl, price, description) {
     this.productId = productId;
     this.title = title;
@@ -73,12 +74,16 @@ const getFilecontent = (callback) => {
       const updadateProducts = products.filter(
         (val) => val.productId !== productId
       );
+      cartModel.Cart.deleteCartById(true,productId,()=>{
         console.log(updadateProducts)
         fs.writeFile(p, JSON.stringify(updadateProducts), (err) => {
           if (err) console.log(err, "on write deleting");
           callback();
         });
 
+
+      })
+        
 
       
       
@@ -97,6 +102,8 @@ const getFilecontent = (callback) => {
     });
   }
 }
+
+exports.Product=Product;
 
 
 

@@ -1,16 +1,16 @@
-const Product = require("../models/product");
-const Cart=require('../models/cart');
+const productModel = require("../models/product");
+const cartModel=require('../models/cart');
 const { fetchbyid } = require("../models/product");
 exports.getProducts = (req, res, next) => {
   console.log("MID PRODUCTLIST");
-  Product.fetchall((product) => {
+ productModel.Product.fetchall((product) => {
     console.log(product);
     res.render("shop/product-list", { product, pageTitle: "Products List", path: "/products" });
   });
 };
 exports.getIndex =(req,res,next)=>{
   console.log("MID index")
-  Product.fetchall((product) => {
+  productModel.Product.fetchall((product) => {
     console.log(product);
     res.render("shop/index", { product, pageTitle: "Home page", path: "/" });
   });
@@ -18,7 +18,7 @@ exports.getIndex =(req,res,next)=>{
 exports.getProduct=(req,res,next)=>{
   console.log("MID GETPRODUCT DETAILS")
   console.log(req.params.productId)
-  Product.fetchbyid(req.params.productId,(product)=>{
+ productModel.Product.fetchbyid(req.params.productId,(product)=>{
     console.log(product)
     res.render('shop/product-details',{product,pageTitle:product.title,path:'/products'})
 
@@ -27,7 +27,7 @@ exports.getProduct=(req,res,next)=>{
 }
 exports.getCart=(req,res,next)=>{
   console.log("MID CART")
-  Cart.getCartData((cartData)=>{
+  cartModel.Cart.getCartData((cartData)=>{
     console.log(cartData)
     let price=0;
     cartData.forEach((val)=>{
@@ -47,7 +47,7 @@ exports.getCart=(req,res,next)=>{
 exports.postCart=(req,res,next)=>{
   console.log("Mid post CART")
   console.log(req.body.productId,req.body.price)
-  Cart.addToCart(req.body.productId,req.body.price,()=>{
+  cartModel.Cart.addToCart(req.body.productId,req.body.price,()=>{
     console.log("Written for cart")
     res.redirect('/cart')
   })
@@ -67,7 +67,7 @@ exports.postDEletefromcart=(req,res,next)=>{
   console.log("MID Delete CART")
     const productId=req.body.productId;
     const entire=(req.body.entire == "true")
-    Cart.deleteCartById(entire,productId,()=>{
+   cartModel.Cart.deleteCartById(entire,productId,()=>{
       console.log("Deleted by id")
       res.redirect('/cart')
     })
