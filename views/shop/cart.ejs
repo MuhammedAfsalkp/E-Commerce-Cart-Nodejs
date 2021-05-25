@@ -1,0 +1,68 @@
+<%- include('../includes/head.ejs') %>
+    </head>
+
+    <body>
+
+        <%- include('../includes/nav.ejs') %>
+            <main>
+                <% if(product.length>0){ %>
+                    <div class="grid">
+                        <% for(let prod of product) { %>
+                            <article class="card product-item">
+                                <header class="card-header">
+                                    <h1 class="product-title">
+                                        <%= prod.title %>
+                                    </h1>
+                                </header>
+                                <div class="card-image">
+                                    <img src="<%= prod.imageurl %>" alt="<%= prod.title %>">
+                                </div>
+                                <div class="card-content">
+                                    <h2 class="product-price">$<%= prod.price %>
+                                    </h2>
+                                    <p class="product-description"> </p>
+
+                                </div>
+                                <div class="card-action">
+                                    <form action="/cart" method="POST">
+                                        <button type="submit" class="btn">+</button>
+                                        <div class="btn">
+                                            <%= prod.qty %>
+                                        </div>
+                                        <input type="hidden" name="productId" value="<%= prod.productId %>"> <input
+                                            type="hidden" name="price" value="<%= prod.price %>">
+                                    </form>
+                                    <a href="/product/<%= prod.productId %>" class="btn">Details</a>
+
+
+                                    <form action="/delete-fromcart" method="POST">
+                                        <button type="submit" class="btn">-</button>
+                                        <input type="hidden" name="productId" value="<%= prod.productId %>">
+
+                                        <input type="hidden" name="entire" value="false">
+                                    </form>
+                                    <form action="/delete-fromcart" method="POST">
+                                        <button type="submit" class="btn">Delete from cart</button>
+                                        <input type="hidden" name="productId" value="<%= prod.productId %>">
+                                        <input type="hidden" name="entire" value="true">
+                                    </form>
+
+                                </div>
+                            </article>
+                            <% } %>
+                                <div>
+                                    <h3>Total price=<%= price %>
+                                    </h3>
+                                </div>
+
+
+                    </div>
+                    <% } else{ %>
+                        <h1>No items in cart!</h1>
+
+                        <% } %>
+
+
+
+            </main>
+            <%- include('../includes/end.ejs') %>

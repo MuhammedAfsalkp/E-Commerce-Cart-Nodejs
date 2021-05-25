@@ -1,0 +1,22 @@
+{
+  "name": "completenode",
+  "version": "1.0.0",
+  "description": "\"nodejs course\"",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js",
+    "server": "node app.js"
+  },
+  "author": "afsal",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "ejs": "^3.1.6",
+    "express": "^4.17.1",
+    "express-handlebars": "^5.3.2"
+  }
+}
