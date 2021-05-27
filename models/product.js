@@ -1,110 +1,81 @@
-const path = require("path");
-const fs = require("fs");
-const cartModel=require("./cart")
-const p = path.join(
-  path.dirname(process.mainModule.filename),
-  "data",
-  "products.json"
-);
+const getDb = require("../Utils/database").getDb;
+// const cartModel = require("./cart");
+const ObjectId=require('mongodb').ObjectId
 
-const getFilecontent = (callback) => {
-  fs.readFile(p, (err, data) => {
-    if (err) {
-      console.log(err,"error data");
-      callback([]);
-    } else {
-      let prod;
-      try {
-        prod = JSON.parse(data);
-      } catch {
-        prod = [];
-      }
-      callback(prod);
-    }
-  });
-};
-
-      class Product {
-  constructor(productId, title, imageurl, price, description) {
-    this.productId = productId;
+class Product {
+  constructor(title, imageurl, price, description,productId,userId) {
     this.title = title;
     this.imageurl = imageurl;
     this.price = price;
     this.description = description;
-  }
-
-  save(callback) {
-    if (this.productId) {
-      getFilecontent((product) => {
-        console.log("update");
-        let existingIndex = product.findIndex(
-          (val) => this.productId == val.productId
-        );
-        product[existingIndex] = this;
-        fs.writeFile(p, JSON.stringify(product), (err) => {
-          if (err) console.log(err, "on writing update");
-          callback();
-        });
-      });
-    } else {
-      this.productId = Math.random().toString();
-      getFilecontent((product) => {
-        product.push(this);
-        fs.writeFile(p, JSON.stringify(product), (err) => {
-          if (err) {
-            console.log(err, " on writing  ");
-          }
-          callback();
-        });
-      });
+    if(productId){
+    this._id= ObjectId( productId)
     }
+    this.userId=new ObjectId(userId)
   }
 
-  static fetchall(callback) {
-    console.log("fetchall");
-    getFilecontent(callback);
-  }
+  save() {
+    const Db = getDb();
+    const products = Db.collection("products");
+    let op;
+    console.log(this._id)
+    if(this._id){
+      console.log("if")
+       op=products.updateOne({_id:this._id},{$set:this})
+    }
+    else{
+      console.log("else")
+       op=products.insertOne(this)
 
-  static deleteByid(productId, callback) {
-    getFilecontent((products) => {
-      console.log("deleting...", productId);
-      if (products == []) {
-        callback();
-      }
-      const updadateProducts = products.filter(
-        (val) => val.productId !== productId
-      );
-      cartModel.Cart.deleteCartById(true,productId,()=>{
-        console.log(updadateProducts)
-        fs.writeFile(p, JSON.stringify(updadateProducts), (err) => {
-          if (err) console.log(err, "on write deleting");
-          callback();
-        });
-
-
+    }
+   
+    return op
+      .then((result) => {
+        console.log(result);
+        return result
       })
-        
-
-      
-      
-     
-    });
-  }
-  static test(cb){
-    cb("test")
-
+      .catch((err) => {
+        console.log(err, "insrerting");
+        return err;
+      });
   }
 
-  static fetchbyid(id, callback) {
-    getFilecontent((product) => {
-      let filterProduct = product.find((value) => value.productId == id);
-      callback(filterProduct);
-    });
+  static fetchall() {
+    const Db = getDb();
+    const products = Db.collection("products");
+    return products
+      .find({})
+      .toArray()
+      .then((product) => {
+        console.log(product);
+        return product;
+      })
+      .catch(err=>{
+        console.log(err,"fetchall")
+      })
   }
+
+  static fetchbyid(id) {
+    const Db = getDb();
+    const products = Db.collection("products");
+    console.log("fetching..." ,id)
+    return products.findOne({_id:new ObjectId(id)}).then(product=>{
+      console.log(new ObjectId(id))
+      console.log(product)
+      return product
+    }).catch(err=>{console.log(err,"fetchbyid")})
+  }
+
+  static deletebyid(id){
+    const Db=getDb();
+    const products=Db.collection("products")
+    return products.deleteOne({_id:new ObjectId(id)}).then(res=>{
+      console.log("Deleting...")
+    }).catch(err=>{
+      console.log(err)
+
+  })
+}
 }
 
-exports.Product=Product;
-
-
-
-
+exports.Product = Product;

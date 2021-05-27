@@ -29,7 +29,8 @@
 
 
                     <button class="btn" type="submit">Update product</button>
-                    <input type="hidden" name="productId" value="<%= product.productId %>">
+                    <input type="hidden" name="productId" value="<%= product._id %>">
+                    <input type="hidden" name="userId" value="<%= product.userId %>">
                 </form>
             </main>
 
