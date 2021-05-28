@@ -27,9 +27,9 @@
                                     <form action="/cart" method="POST">
                                         <button type="submit" class="btn">+</button>
                                         <div class="btn">
-                                            <%= prod.qty %>
+                                            <%= prod.quantity %>
                                         </div>
-                                        <input type="hidden" name="productId" value="<%= prod.productId %>"> <input
+                                        <input type="hidden" name="productId" value="<%= prod._id %>"> <input
                                             type="hidden" name="price" value="<%= prod.price %>">
                                     </form>
                                     <a href="/product/<%= prod.productId %>" class="btn">Details</a>
@@ -37,22 +37,26 @@
 
                                     <form action="/delete-fromcart" method="POST">
                                         <button type="submit" class="btn">-</button>
-                                        <input type="hidden" name="productId" value="<%= prod.productId %>">
+                                        <input type="hidden" name="productId" value="<%= prod._id %>">
 
                                         <input type="hidden" name="entire" value="false">
                                     </form>
                                     <form action="/delete-fromcart" method="POST">
                                         <button type="submit" class="btn">Delete from cart</button>
-                                        <input type="hidden" name="productId" value="<%= prod.productId %>">
+                                        <input type="hidden" name="productId" value="<%= prod._id %>">
                                         <input type="hidden" name="entire" value="true">
                                     </form>
 
                                 </div>
                             </article>
                             <% } %>
-                                <div>
+                                <div >
                                     <h3>Total price=<%= price %>
                                     </h3>
+                                    <form action="/orders" method="POST">
+                                        <button type="submit" class="btn">Order</button>
+                                    </form>
+                                   
                                 </div>
 
 

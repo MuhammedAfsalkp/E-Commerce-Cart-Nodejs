@@ -18,7 +18,8 @@ app.use("/favicon.ico", controlFav);
 app.use(express.static(path.join(__dirname, "public")));
 app.use((req,res,next)=>{
     User.findbyid("60af703911a3afa395b72f8d").then(user=>{
-        req.user=user
+        req.user=new User(user.name,user.email,user.cart,user._id)
+        console.log("user mid")
         next()
     }).catch(err=>{
         console.log("Error on getting user")

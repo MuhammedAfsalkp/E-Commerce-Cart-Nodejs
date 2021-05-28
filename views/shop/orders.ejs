@@ -1,9 +1,39 @@
 <%- include('../includes/head.ejs') %>
-</head>
-<body>
+    </head>
 
-<%- include('../includes/nav.ejs') %>
-<main>
-    <h1>Orders</h1>
-</main> 
-<%- include('../includes/end.ejs') %>
+    <body>
+
+        <%- include('../includes/nav.ejs') %>
+
+            <main>
+                <% if(order.length<=0) { %>
+                    <h2>No orders</h2>
+                    <% }else { %>
+                        <% for(let x of order){ %>
+                            <div>
+                                <ul><h2>Order #<%=x._id%></h2>
+                                </ul>
+                                <% x.items.forEach(prod=>{ %>
+                                    <ul style="text-align: center;">
+                                        <h2>
+                                            <%=prod.title%>
+                                        </h2>
+                                    </ul>
+                                    <ul style="text-align: center;">
+                                       <h4> Quantity:<%=prod.quantity%></h4>
+                                    </ul>
+                                    <l1 style="text-align: center;">
+                                       <h3 style="color: blue;" >$ <%=prod.price%></h3>
+                                    </l1>
+                                    <l1><img src="<%= prod.imageurl  %> "></l1>
+                                    
+                                    <% }) %>
+                                    <hr>
+
+
+                            </div>
+                            <% } %>
+                            <% } %>
+            </main>
+
+            <%- include('../includes/end.ejs') %>

@@ -23,52 +23,63 @@ exports.getProduct=(req,res,next)=>{
  }).catch(err=>console.log(err,"fetching"))
 }
   
-//  }
-// exports.getCart=(req,res,next)=>{
-//   console.log("MID CART")
-//   cartModel.Cart.getCartData((cartData)=>{
-//     console.log(cartData)
-//     let price=0;
-//     cartData.forEach((val)=>{
-//       price=price+(parseFloat(val.price)*parseInt(val.qty))
-//     })
-//     res.render('shop/cart',{pageTitle:'Cart',path:'/cart',price,product:cartData})
+
+exports.getCart=(req,res,next)=>{
+  console.log("MID CART")
+  req.user.getCartData().then(product=>{
+    console.log("data got")
+    console.log(product)
+    res.render('shop/cart',{pageTitle:'Cart',path:'/cart',price:100,product})
+  }).catch(err=>console.log(err,"Getting cart data"))
+ 
     
+       
+}
 
-//   })
+
+exports.postCart=(req,res,next)=>{
+  console.log("Mid post CART")
+  console.log(req.body.productId)
+  const productId=req.body.productId
+  console.log(req.user,"postcart")
+  req.user.addtoCart(productId).then(ris=>{
+    console.log("Aded to cart successsfully")
+    res.redirect('/cart')
+    
+  })
   
-        
-// }
+}
+exports.postOrders=(req,res,next)=>{
+  console.log("MID  POST ORDERS")
+  req.user.addorder().then(ris=>{
+    console.log("Orderes")
+    res.redirect("/orders")
+  }).catch(err=>console.log(err,"adding order"))  
 
-  
+}
 
 
-// exports.postCart=(req,res,next)=>{
-//   console.log("Mid post CART")
-//   console.log(req.body.productId,req.body.price)
-//   cartModel.Cart.addToCart(req.body.productId,req.body.price,()=>{
-//     console.log("Written for cart")
-//     res.redirect('/cart')
-//   })
-  
 
-//}
 exports.getOrders=(req,res,next)=>{
-  console.log("MID ORDERS")
-  res.render('shop/orders',{pageTitle:'orders',path:'/orders'})
+  console.log("MID GET ORDERS")
+  req.user.getorder().then(order=>{
+    console.log("data fetched")
+    res.render('shop/orders',{pageTitle:'orders',path:'/orders',order})
+
+  }).catch(err=>console.log(err,"getting order data"))  
+ 
 }
 exports.getCheckout=(req,res,next)=>{
   console.log("MID CHECKOUT")
   res.render('shop/checkout',{pageTitle:'Checkout',path:'/checkout'})
 }
 
-// exports.postDEletefromcart=(req,res,next)=>{
-//   console.log("MID Delete CART")
-//     const productId=req.body.productId;
-//     const entire=(req.body.entire == "true")
-//    cartModel.Cart.deleteCartById(entire,productId,()=>{
-//       console.log("Deleted by id")
-//       res.redirect('/cart')
-//     })
-
-//}
+exports.postDEletefromcart=(req,res,next)=>{
+  console.log("MID Delete CART")
+    const productId=req.body.productId;
+    const entire=(req.body.entire == "true")
+    req.user.delFromCart(productId,entire).then(ris=>{
+      console.log("Deleted cart ")
+      res.redirect('/cart')
+    }).catch(err=>console.log(err,"Deleting Cart"))
+}
