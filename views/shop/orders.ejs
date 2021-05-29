@@ -16,7 +16,7 @@
                                 <% x.items.forEach(prod=>{ %>
                                     <ul style="text-align: center;">
                                         <h2>
-                                            <%=prod.title%>
+                                            <%=prod.product.title%>
                                         </h2>
                                     </ul>
                                     <ul style="text-align: center;">
@@ -25,7 +25,7 @@
                                     <l1 style="text-align: center;">
                                        <h3 style="color: blue;" >$ <%=prod.price%></h3>
                                     </l1>
-                                    <l1><img src="<%= prod.imageurl  %> "></l1>
+                                    <l1><img src="<%= prod.product.imageurl  %> "></l1>
                                     
                                     <% }) %>
                                     <hr>

@@ -11,14 +11,14 @@
                             <article class="card product-item">
                                 <header class="card-header">
                                     <h1 class="product-title">
-                                        <%= prod.title %>
+                                        <%= prod.productId.title %>
                                     </h1>
                                 </header>
                                 <div class="card-image">
-                                    <img src="<%= prod.imageurl %>" alt="<%= prod.title %>">
+                                    <img src="<%= prod.productId.imageurl %>" alt="<%= prod.productId.title %>">
                                 </div>
                                 <div class="card-content">
-                                    <h2 class="product-price">$<%= prod.price %>
+                                    <h2 class="product-price">$<%= prod.productId.price %>
                                     </h2>
                                     <p class="product-description"> </p>
 
@@ -29,21 +29,21 @@
                                         <div class="btn">
                                             <%= prod.quantity %>
                                         </div>
-                                        <input type="hidden" name="productId" value="<%= prod._id %>"> <input
-                                            type="hidden" name="price" value="<%= prod.price %>">
+                                        <input type="hidden" name="productId" value="<%= prod.productId._id %>"> <input
+                                            type="hidden" name="price" value="<%= prod.productId.price %>">
                                     </form>
-                                    <a href="/product/<%= prod.productId %>" class="btn">Details</a>
+                                    <a href="/product/<%= prod.productId._id%>" class="btn">Details</a>
 
 
                                     <form action="/delete-fromcart" method="POST">
                                         <button type="submit" class="btn">-</button>
-                                        <input type="hidden" name="productId" value="<%= prod._id %>">
+                                        <input type="hidden" name="productId" value="<%= prod.productId._id %>">
 
                                         <input type="hidden" name="entire" value="false">
                                     </form>
                                     <form action="/delete-fromcart" method="POST">
                                         <button type="submit" class="btn">Delete from cart</button>
-                                        <input type="hidden" name="productId" value="<%= prod._id %>">
+                                        <input type="hidden" name="productId" value="<%= prod.productId._id %>">
                                         <input type="hidden" name="entire" value="true">
                                     </form>
 
