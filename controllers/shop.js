@@ -41,11 +41,15 @@ exports.getCart = (req, res, next) => {
     .then((data) => {
       console.log(data);
       console.log(data.cart.items);
+      let price=0;
+      data.cart.items.forEach(val=>{
+        price=price+(val.productId.price*val.quantity)
+      })
       const product = data.cart.items;
       res.render("shop/cart", {
         pageTitle: "Cart",
         path: "/cart",
-        price: 100,
+        price,
         product,
       });
     })
@@ -124,14 +128,14 @@ exports.postDEletefromcart = (req, res, next) => {
     .catch((err) => console.log(err, "Deleting Cart"));
 };
 
-exports.cartUpdate= (req,res,next)=>{
+exports.cartUpdate=  (req,res,next)=>{
   const cartId=req.user.cartProductExist()
   Product.find().select('_id').then(async ris=>{
     console.log(cartId)
     console.log(ris)
     let exist=ris.map(x=>x._id.toString())
     console.log(exist)
-    cartId.forEach(async (val)=>{
+    for(let val of cartId){
       console.log(val)
       let check=exist.includes(val.toString())
       console.log(check)
@@ -140,7 +144,7 @@ exports.cartUpdate= (req,res,next)=>{
         await req.user.delFromCart(val,true).then(ris=>console.log("Deleted from cart"))
       }     
       
-    })
+    }
     console.log("finished")
     next()
     

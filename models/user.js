@@ -42,7 +42,7 @@ userSchema.methods.addToCart = function (productId) {
     .catch((err) => console.log(err, "add to cart"));
 };
 
-userSchema.methods.delFromCart = async function (productId,entire) {
+userSchema.methods.delFromCart = function (productId,entire) {
   let updateCartItems = this.cart.items;
   let updateIndex = updateCartItems.findIndex(
     (val) => val.productId.toString() == productId.toString()
@@ -73,6 +73,10 @@ userSchema.methods.cartProductExist=function(){
   })
   return availableId
 
+}
+
+userSchema.methods.cartPrice=function(){
+  
 }
 
 const model = mongoose.model("User", userSchema);
