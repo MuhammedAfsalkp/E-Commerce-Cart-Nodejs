@@ -1,6 +1,7 @@
 const Product = require("../models/product");
 const Order = require("../models/order");
 exports.getProducts = (req, res, next) => {
+  
   console.log("MID PRODUCTLIST");
   Product.find().then((product) => {
     console.log("Got products");
@@ -8,10 +9,13 @@ exports.getProducts = (req, res, next) => {
       product,
       pageTitle: "Products List",
       path: "/products",
+    
     });
   });
 };
 exports.getIndex = (req, res, next) => {
+  
+
   console.log("MID index");
   Product.find().then((product) => {
     //console.log(product);
@@ -19,6 +23,7 @@ exports.getIndex = (req, res, next) => {
   });
 };
 exports.getProduct = (req, res, next) => {
+ 
   console.log("MID GETPRODUCT DETAILS");
   const productId = req.params.productId;
   Product.findById(productId)
@@ -28,12 +33,14 @@ exports.getProduct = (req, res, next) => {
         product,
         pageTitle: product.title,
         path: "/products",
+        
       });
     })
     .catch((err) => console.log(err, "fetching"));
 };
 
 exports.getCart = (req, res, next) => {
+ 
   console.log("MID CART");
   req.user
     .populate("cart.items.productId")
@@ -51,6 +58,7 @@ exports.getCart = (req, res, next) => {
         path: "/cart",
         price,
         product,
+        
       });
     })
     .catch((err) => console.log(err, "Getting cart data"));
@@ -97,6 +105,7 @@ exports.postOrders = (req, res, next) => {
 };
 
 exports.getOrders = (req, res, next) => {
+  
   console.log("MID GET ORDERS");
   Order.find({ "user.userId": req.user._id })
     .then((order) => {
@@ -106,13 +115,15 @@ exports.getOrders = (req, res, next) => {
         pageTitle: "orders",
         path: "/orders",
         order,
+        
       });
     })
     .catch((err) => console.log(err, "getting order data"));
 };
 exports.getCheckout = (req, res, next) => {
+  
   console.log("MID CHECKOUT");
-  res.render("shop/checkout", { pageTitle: "Checkout", path: "/checkout" });
+  res.render("shop/checkout", { pageTitle: "Checkout", path: "/checkout" , });
 };
 
 exports.postDEletefromcart = (req, res, next) => {

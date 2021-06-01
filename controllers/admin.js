@@ -1,9 +1,11 @@
 const Product=require('../models/product')
 exports.getAddproduct = (req, res, next) => {
+  
   console.log("MID admin GET add-product");
   res.render("admin/add-product", {
     pageTitle: "Add product",
     path: "/admin/add-product",
+   
   });
 };
 
@@ -25,6 +27,7 @@ exports.postAddproduct = (req, res, next) => {
   })
 };
 exports.getEditproduct = (req, res, next) => {
+  
   console.log(req.params.productId, req.query.edit);
   console.log("Mid edit product");
   const productId = req.params.productId;
@@ -33,6 +36,7 @@ exports.getEditproduct = (req, res, next) => {
       pageTitle: "Edit product",
       path: "/admin/edit-product",
       product,
+     
     });
 
    })
@@ -62,6 +66,7 @@ exports.postEditproduct = (req,res,next)=>{
 
 exports.getProducts = (req, res, next) => {
   console.log("MID admin PRODUCTLIST");
+ 
   Product.find()
   //.select('title -_id')
   //.populate('userId','name email -_id')
@@ -70,6 +75,7 @@ exports.getProducts = (req, res, next) => {
       product,
       pageTitle: "Products List",
       path: "/admin/products",
+   
     });
   }) 
 };

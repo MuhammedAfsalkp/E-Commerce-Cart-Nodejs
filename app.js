@@ -2,11 +2,13 @@ const express = require("express");
 const bodyparser = require("body-parser");
 const adminRoutes = require("./routes/admin");
 const userRoutes = require("./routes/shop");
+const authRoutes = require("./routes/auth")
 const errorController=require('./controllers/error')
 const { controlFav } = require("./Utils/utils");
 const path = require("path");
 const User=require("./models/user")
 const mongoose=require('mongoose')
+const session=require('express-session')
 
 const app = express();
 
@@ -16,6 +18,11 @@ app.set("views", "views");
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use("/favicon.ico", controlFav);
 app.use(express.static(path.join(__dirname, "public")));
+app.use(session({
+    secret:'secret key',
+    resave:false,
+    saveUninitialized:false
+}))
 app.use((req,res,next)=>{
     User.findById('60b1cbdc4c3ec021a0c7f980').then(user=>{
         console.log("user mid")
@@ -32,7 +39,9 @@ app.use((req,res,next)=>{
 app.use("/admin", adminRoutes);
 
 //workon localhost../,,existing..
+app.use(authRoutes)
 app.use(userRoutes);
+
 
 app.use(errorController.error);
 mongoose.connect('mongodb://127.0.0.1:27017/shop', { useNewUrlParser: true , useUnifiedTopology: true }).then(ris=>{
