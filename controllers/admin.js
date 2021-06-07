@@ -1,11 +1,10 @@
 const Product=require('../models/product')
 exports.getAddproduct = (req, res, next) => {
-  
-  console.log("MID admin GET add-product");
+   console.log("MID admin GET add-product");
   res.render("admin/add-product", {
     pageTitle: "Add product",
     path: "/admin/add-product",
-   
+    isAuthenticated:req.session.isLoggedIn
   });
 };
 
@@ -36,6 +35,7 @@ exports.getEditproduct = (req, res, next) => {
       pageTitle: "Edit product",
       path: "/admin/edit-product",
       product,
+      isAuthenticated:req.session.isLoggedIn
      
     });
 
@@ -75,7 +75,7 @@ exports.getProducts = (req, res, next) => {
       product,
       pageTitle: "Products List",
       path: "/admin/products",
-   
+      isAuthenticated:req.session.isLoggedIn
     });
   }) 
 };

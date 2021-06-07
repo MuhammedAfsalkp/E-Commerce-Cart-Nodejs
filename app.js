@@ -9,11 +9,18 @@ const path = require("path");
 const User=require("./models/user")
 const mongoose=require('mongoose')
 const session=require('express-session')
+const Mongostore=require('connect-mongodb-session')(session)
 
 const app = express();
+const URI= 'mongodb://127.0.0.1:27017/shop'
+const store= new Mongostore({
+    uri:URI,
+    collection:"session"
+})
 
 app.set("view engine", "ejs");
 app.set("views", "views");
+
 
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use("/favicon.ico", controlFav);
@@ -21,15 +28,19 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(session({
     secret:'secret key',
     resave:false,
-    saveUninitialized:false
+    saveUninitialized:false,
+    store:store
 }))
 app.use((req,res,next)=>{
-    User.findById('60b1cbdc4c3ec021a0c7f980').then(user=>{
+    if(!req.session.user){
+        return next()
+    }
+    User.findById(req.session.user._id).then(user=>{
         console.log("user mid")
         req.user=user;
         next()
     }).catch(err=>{
-        console.log("Error on getting user")
+        console.log("Error on getting user on req")
     })
 
 

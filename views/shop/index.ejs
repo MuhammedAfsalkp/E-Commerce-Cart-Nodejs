@@ -24,6 +24,7 @@
                                     <p class="product-description"><%= prod.description %></p>
 
                                 </div>
+                                <% if(isAuthenticated) {%> 
                                 <div class="card-action">
                                     <form action="/cart" method="POST">
                                         <button type="submit" class="btn" >Add to cart</button>
@@ -33,6 +34,7 @@
                                     </form>
 
                                 </div>
+                                <% } %> 
                             </article>
                             <% } %>
 

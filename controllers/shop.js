@@ -9,17 +9,17 @@ exports.getProducts = (req, res, next) => {
       product,
       pageTitle: "Products List",
       path: "/products",
-    
+      isAuthenticated:req.session.isLoggedIn
     });
   });
 };
 exports.getIndex = (req, res, next) => {
   
 
-  console.log("MID index");
+  console.log("MID index",req.session.isLoggedIn);
   Product.find().then((product) => {
     //console.log(product);
-    res.render("shop/index", { product, pageTitle: "Home page", path: "/" });
+    res.render("shop/index", { product, pageTitle: "Home page", path: "/" ,isAuthenticated:req.session.isLoggedIn});
   });
 };
 exports.getProduct = (req, res, next) => {
@@ -33,6 +33,7 @@ exports.getProduct = (req, res, next) => {
         product,
         pageTitle: product.title,
         path: "/products",
+        isAuthenticated:req.session.isLoggedIn
         
       });
     })
@@ -58,7 +59,7 @@ exports.getCart = (req, res, next) => {
         path: "/cart",
         price,
         product,
-        
+        isAuthenticated:req.session.isLoggedIn
       });
     })
     .catch((err) => console.log(err, "Getting cart data"));
@@ -87,7 +88,7 @@ exports.postOrders = (req, res, next) => {
       const order = new Order({
         user: {
           userId: req.user._id,
-          name: req.user.name,
+          email: req.user.email,
         },
         items: productdata,
       });
@@ -115,7 +116,7 @@ exports.getOrders = (req, res, next) => {
         pageTitle: "orders",
         path: "/orders",
         order,
-        
+        isAuthenticated:req.session.isLoggedIn
       });
     })
     .catch((err) => console.log(err, "getting order data"));
@@ -123,7 +124,7 @@ exports.getOrders = (req, res, next) => {
 exports.getCheckout = (req, res, next) => {
   
   console.log("MID CHECKOUT");
-  res.render("shop/checkout", { pageTitle: "Checkout", path: "/checkout" , });
+  res.render("shop/checkout", { pageTitle: "Checkout", path: "/checkout" , isAuthenticated:req.session.isLoggedIn});
 };
 
 exports.postDEletefromcart = (req, res, next) => {

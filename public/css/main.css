@@ -31,11 +31,18 @@ main {
 .main-header-item {
   margin: 0 1rem;
   padding: 0;
+ 
 }
+.main-header-item button
+{
+  background-color: rgb(10, 193, 199);
+}
+.main-header-item button,
 .main-header-item a {
   text-decoration: none;
   color: black;
 }
+.main-header-item button:hover,
 .main-header-item a:hover,
 .main-header-item a:active,
 .main-header-item a.active {
