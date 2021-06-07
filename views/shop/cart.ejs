@@ -25,6 +25,8 @@
                                 </div>
                                 <div class="card-action">
                                     <form action="/cart" method="POST">
+                                             <!-- for csrf protection -->
+                                        <input type="hidden" name="_csrf" value="<%=csrfToken%>">
                                         <button type="submit" class="btn">+</button>
                                         <div class="btn">
                                             <%= prod.quantity %>
@@ -32,17 +34,21 @@
                                         <input type="hidden" name="productId" value="<%= prod.productId._id %>"> <input
                                             type="hidden" name="price" value="<%= prod.productId.price %>">
                                     </form>
+                                    
                                     <a href="/product/<%= prod.productId._id%>" class="btn">Details</a>
 
 
                                     <form action="/delete-fromcart" method="POST">
                                         <button type="submit" class="btn">-</button>
                                         <input type="hidden" name="productId" value="<%= prod.productId._id %>">
-
+                                             <!-- for csrf protection -->
+                  m                     <input type="hidden" name="_csrf" value="<%=csrfToken%>">
                                         <input type="hidden" name="entire" value="false">
                                     </form>
                                     <form action="/delete-fromcart" method="POST">
                                         <button type="submit" class="btn">Delete from cart</button>
+                                             <!-- for csrf protection -->
+                                          <input type="hidden" name="_csrf" value="<%=csrfToken%>">
                                         <input type="hidden" name="productId" value="<%= prod.productId._id %>">
                                         <input type="hidden" name="entire" value="true">
                                     </form>
@@ -54,6 +60,8 @@
                                     <h3>Total price=<%= price %>
                                     </h3>
                                     <form action="/orders" method="POST">
+                                             <!-- for csrf protection -->
+                                        <input type="hidden" name="_csrf" value="<%=csrfToken%>">
                                         <button type="submit" class="btn">  Order now...!</button>
                                     </form>
                                    

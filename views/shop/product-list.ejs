@@ -29,6 +29,8 @@
                                     <% if(isAuthenticated) {%> 
                                     <form action="/cart" method="POST">
                                         <button type="submit" class="btn" >Add to cart</button>
+                                             <!-- for csrf protection -->
+                                        <input type="hidden" name="_csrf" value="<%=csrfToken%>">
                                         <input type="hidden" name="productId" value="<%= prod._id %>">
                                         <!-- <input type="hidden" name="price" value="<%= prod.price %>"> -->
                                         </form>

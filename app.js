@@ -10,9 +10,11 @@ const User=require("./models/user")
 const mongoose=require('mongoose')
 const session=require('express-session')
 const Mongostore=require('connect-mongodb-session')(session)
+const csrf=require('csurf')
 
 const app = express();
 const URI= 'mongodb://127.0.0.1:27017/shop'
+const csrfProtection=csrf()
 const store= new Mongostore({
     uri:URI,
     collection:"session"
@@ -31,6 +33,7 @@ app.use(session({
     saveUninitialized:false,
     store:store
 }))
+app.use(csrfProtection)
 app.use((req,res,next)=>{
     if(!req.session.user){
         return next()
@@ -44,6 +47,12 @@ app.use((req,res,next)=>{
     })
 
 
+})
+// to include variable for evey rendering page throgh res ,locals
+app.use((req,res,next)=>{
+    // res.locals.isAuthencticated=req.session.isLoggedIn
+    res.locals.csrfToken=req.csrfToken()
+    next()
 })
 
 //works on routes localhost.../admin/,,existing,,
