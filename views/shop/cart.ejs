@@ -42,7 +42,7 @@
                                         <button type="submit" class="btn">-</button>
                                         <input type="hidden" name="productId" value="<%= prod.productId._id %>">
                                              <!-- for csrf protection -->
-                  m                     <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                                       <input type="hidden" name="_csrf" value="<%=csrfToken%>">
                                         <input type="hidden" name="entire" value="false">
                                     </form>
                                     <form action="/delete-fromcart" method="POST">

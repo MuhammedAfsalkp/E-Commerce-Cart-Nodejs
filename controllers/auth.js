@@ -1,4 +1,5 @@
 const User=require('../models/user')
+const crypto=require('crypto')
 const bcrypt=require('bcryptjs')
 const nodeMailer=require('nodemailer')
 const sendGridTransport=require('nodemailer-sendgrid-transport')
@@ -68,9 +69,13 @@ exports.postLogin =async  (req, res, next) => {
         }
         req.session.isLoggedIn=true;
         req.session.user=user
-        await req.session.save()
-        console.log(req.get('cookie'))
-        res.redirect("/")
+        return req.session.save(err=>{
+            console.log(req.session)
+             res.redirect("/")
+
+        })
+        
+        
 
 
     }
@@ -134,8 +139,10 @@ exports.postSignup =async (req,res,next)=>{
                 return transporter.sendMail({
                     to:email,
                     from:'af-shopingcart@afsolutions.xyz',
-                    subject:'node project signup',
-                    html:'<h1>Successfully signed up.</h1>'
+                    subject:'Signed up Succeessfully',
+                    html:`<h1>Welcome to Af-shopingcart.</h1>
+                    <p>Login to experience oue service...</p>
+                    <p>Enjoy....</p>`
                 }).then(ris=>console.log("Email has been sent.")).catch(err=>console.log(err,"sending email"))
                 
 
@@ -148,4 +155,133 @@ exports.postSignup =async (req,res,next)=>{
         console.log(err,"post signup")
     }
  
+}
+
+
+
+
+exports.getResetPassword=(req,res,next)=>{
+    let message=req.flash('error')
+    if(message.length > 0){
+        message=message[0]
+    }else{
+        message=null;
+    }
+    res.render("auth/resetP", {
+        pageTitle: "Reset password",
+        path: "/reset",
+        isAuthenticated:req.session.isLoggedIn,
+        errorMessage:message
+        
+        
+      });
+
+}
+
+exports.postResetPassword=async (req,res,next)=>{
+    try{
+        let tokenBuffer= await crypto.randomBytes(32)
+        const token=tokenBuffer.toString('hex')
+        const email=req.body.email;
+        User.findOne({email:email},async (err,user)=>{
+           if(!user){
+            console.log(err,"Email doesnt exist for resetting passwod")
+            req.flash('error','This Email is not registerd!!')
+            return req.session.save(ris=>{
+                res.redirect('/reset')
+            })
+        }
+           console.log("email exist..update",user)
+           user.resetToken= token;
+           user.tokenExpiration=Date.now()+3600000;
+           await user.save()
+           console.log("saved user successfullly",user)
+           res.redirect("/")
+           transporter.sendMail({
+            to:email,
+            from:'af-shopingcart@afsolutions.xyz',
+            subject:'Password Reset',
+            html:`
+                <p>You requested for a password request.</p>
+                <p>Click this <a href="http://localhost:3000/reset/${token}"> link </a>to reset password.</p>
+            
+            `
+
+           })
+
+
+
+
+
+
+    })
+    }catch(err){
+        
+        console.log(err,"post reset password")
+        res.redirect("/reset")
+    }
+    
+}
+
+exports.getNewPassword= async (req,res,next)=>{
+    try{
+        console.log("Get new password")
+    let message;
+    const token=req.params.token
+    console.log(token)
+    User.findOne({resetToken:token,tokenExpiration:{$gt:Date.now()}},async (err,user)=>{
+        if(!user){
+            console.log("No user with such restToken...check")
+            req.flash('error','Token expired!!..retry.')
+            return req.session.save(err=>{
+                console.log("flash saved")
+                res.redirect("/err")
+
+            })
+            
+        }
+        console.log(user)
+         message=req.flash('error')
+        if(message.length > 0){
+            message=message[0]
+        }else{
+            message=null;
+        }
+        res.render("auth/newPassword", {
+            pageTitle: "New password",
+            path: "/newPassword",
+            userId:user._id,
+            isAuthenticated:req.session.isLoggedIn,
+            errorMessage:message
+
+    })
+  
+        
+        
+        
+      });
+    }catch(err){
+        console.log(err,"getNew password")
+    }
+
+
+}
+exports.postNewPassword=async (req,res,next)=>{
+    console.log("Post new password",req.body)
+    const password=req.body.password;
+    const hashpassword=await bcrypt.hash(password,12)
+    const userId=req.body.userId
+    User.findById(userId,async (err,user)=>{
+        console.log(user)
+        if(!user || err){
+            console.log(err)
+            return res.redirect("/")
+
+        }
+        user.password=hashpassword;
+        await user.save()
+         res.redirect('/login')
+    })
+    
+
 }

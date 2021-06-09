@@ -5,6 +5,12 @@
     <body>
         <%- include('includes/nav.ejs') %>
             <main>
+                <% if(errorMessage) {%> 
+                    <div  class="user-message user-message-error"><%= errorMessage %> </div>
+                    
+                    <% } else {%> 
+
                 <h1>PAGE NOT FOUND !</h1>
+                <% } %> 
             </main>
             <%- include('includes/end.ejs') %>

@@ -38,6 +38,7 @@ app.use(session({
 app.use(csrfProtection)
 app.use(flash())
 app.use((req,res,next)=>{
+    console.log("all ",req.session.isLoggedIn)
     if(!req.session.user){
         return next()
     }
