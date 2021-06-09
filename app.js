@@ -11,6 +11,8 @@ const mongoose=require('mongoose')
 const session=require('express-session')
 const Mongostore=require('connect-mongodb-session')(session)
 const csrf=require('csurf')
+const flash=require('connect-flash')
+
 
 const app = express();
 const URI= 'mongodb://127.0.0.1:27017/shop'
@@ -34,6 +36,7 @@ app.use(session({
     store:store
 }))
 app.use(csrfProtection)
+app.use(flash())
 app.use((req,res,next)=>{
     if(!req.session.user){
         return next()

@@ -92,3 +92,18 @@ main {
   background-color: #00695c;
   color:white;
 }
+.user-message{
+  margin: auto;
+  width: 90%;
+  border: 1px solid rgb(15, 90, 5);
+  padding: 1rem;
+  border-radius: 3px;
+  text-align: center;
+  background: rgb(138, 196, 133);
+
+}
+.user-message-error{
+border-color: rgb(207, 72, 72);
+background: rgb(202, 159, 159);
+color: rgb(10, 9, 8);
+}
