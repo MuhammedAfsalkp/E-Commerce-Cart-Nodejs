@@ -30,7 +30,8 @@ exports.getAddproduct = (req, res, next) => {
   });
 };
 
-exports.postAddproduct = (req, res, next) => {
+exports.postAddproduct = async (req, res, next) => {
+  try{
   console.log("Mid admin  POST add-product;-", req.body);
   const title = req.body.product;
   const imageurl = req.body.imageurl;
@@ -47,16 +48,20 @@ exports.postAddproduct = (req, res, next) => {
       res.redirect(`/admin/add-product`)
     })
   }
-  
   const product=new Product({title:title,imageurl:imageurl,price:price,description:description,userId:userId})
-  product.save()
- .then(()=>{
-    console.log("product created",)
-    res.redirect("/admin/products")
+  await product.save()
+  console.log("product created",)
+  res.redirect("/admin/products")
+}catch(err){
+  req.flash('error',`${err}`)
+  req.session.save(e=>{
+    if(e){ next(new Error(err))}
+    res.redirect("/500")
+
   })
-  .catch(err=>{
-    console.log(err)
-  })
+
+}
+
 };
 exports.getEditproduct = (req, res, next) => {
   console.log("Mid edit product");
@@ -90,12 +95,20 @@ exports.getEditproduct = (req, res, next) => {
      
     });
 
+   }).catch(err=>{
+    req.flash('error',`${err}`)
+    req.session.save(e=>{
+      if(e){ next(new Error(err))}
+      res.redirect("/500")
+  
+    })
    })
    
  
 };
 
 exports.postEditproduct =async (req,res,next)=>{
+  try{
   console.log("MID post Edit ",req.body)
   const productId= req.body.productId;
   const title = req.body.product;
@@ -112,7 +125,6 @@ exports.postEditproduct =async (req,res,next)=>{
       res.redirect(`/admin/edit-product/${productId}`)
     })
   }
-  try{
   let product = await Product.findById(productId)
   console.log( typeof product.userId,typeof req.user._id)
     if(product.userId.toString() !== req.user._id.toString()){
@@ -130,7 +142,12 @@ exports.postEditproduct =async (req,res,next)=>{
     res.redirect('/admin/products')  
     }catch(err){
     console.log(err,"post edit product")
-    res.redirect("/admin/products")
+    req.flash('error',`${err}`)
+    req.session.save(e=>{
+      if(e){ next(new Error(err))}
+      res.redirect("/500")
+  
+    })
    }
  
  }
@@ -148,6 +165,14 @@ exports.getProducts = (req, res, next) => {
       path: "/admin/products",
       isAuthenticated:req.session.isLoggedIn
     });
+  }).catch(err=>{
+    console.log("err getting product")
+    req.flash('error',`${err}`)
+    req.session.save(e=>{
+      if(e){ next(new Error(err))}
+      res.redirect("/500")
+  
+    })
   }) 
 };
 
@@ -166,6 +191,17 @@ exports.postDeleteproduct = (req,res,next)=>{
     
     console.log("Deleted",ris)
     res.redirect("/admin/products")
-  }).catch(err=>console.log(err,"deleting"))
+  }).catch(err=>{console.log(err,"deleting")
+  req.flash('error',`${err}`)
+  req.session.save(e=>{
+    if(e){ next(new Error(err))}
+    res.redirect("/500")
+
+  })
+
+
+}
+  
+  )
 }
 

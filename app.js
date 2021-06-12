@@ -3,6 +3,7 @@ const bodyparser = require("body-parser");
 const adminRoutes = require("./routes/admin");
 const userRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth")
+const errRoutes = require("./routes/error")
 const errorController=require('./controllers/error')
 const { controlFav } = require("./Utils/utils");
 const path = require("path");
@@ -40,26 +41,35 @@ app.use(session({
 }))
 app.use(csrfProtection)
 app.use(flash())
-app.use((req,res,next)=>{
-    console.log("all ",req.session.isLoggedIn)
-    if(!req.session.user){
-        return next()
-    }
-    User.findById(req.session.user._id).then(user=>{
-        console.log("user mid")
-        req.user=user;
-        next()
-    }).catch(err=>{
-        console.log("Error on getting user on req")
-    })
-
-
-})
 // to include variable for evey rendering page throgh res ,locals
 app.use((req,res,next)=>{
     // res.locals.isAuthencticated=req.session.isLoggedIn
     res.locals.csrfToken=req.csrfToken()
     next()
+})
+app.use((req,res,next)=>{
+   
+    console.log("all ",req.session.isLoggedIn)
+    if(!req.session.user){
+        return next()
+    }
+    User.findById(req.session.user._id).then(user=>{
+         
+        if(!user){
+            return next()
+        }
+        console.log("user mid")
+        req.user=user;
+        next()
+    }).catch(err=>{
+        console.log("Error on getting user on req")
+        const error=new Error(err)
+        error.httpStatusCode=500
+        return next(error)
+        //return next(new Error(err))
+    })
+
+
 })
 
 //works on routes localhost.../admin/,,existing,,
@@ -68,23 +78,28 @@ app.use("/admin", adminRoutes);
 //workon localhost../,,existing..
 app.use(authRoutes)
 app.use(userRoutes);
+app.use(errRoutes);
 
 
-app.use(errorController.error);
-mongoose.connect('mongodb://127.0.0.1:27017/shop', { useNewUrlParser: true , useUnifiedTopology: true }).then(ris=>{
+
+//  app.use('/500',errorController.get500)
+app.use(errorController.get404);
+
+app.use((error,req,res,next)=>{
+    console.log("Error is",error)
+    res.render("500", { pageTitle: "500", path: "/500",
+      errorMessage:error, 
+      isAuthenticated:req.session.isLoggedIn})
+})
+
+mongoose.connect('mongodb://127.0.0.1:27017/shop', { useNewUrlParser: true , useUnifiedTopology: true })
+.then(ris=>{
     console.log("connected Db")
-    User.findOne().then(user=>{
-        if(!user){    
-        const user=new User({name:'afsal',email:'mohamedafsalkp321@gmail.com',cart:{items:[]}})
-        user.save().then(()=>console.log("user created"))
-        }
-
-    })
-   
     app.listen(3000, () => console.log("Server connected Successfully"));
 }).catch(err=>{
     console.log(err)
     console.log("Erro connecting mongoose")
+
 })
 
 

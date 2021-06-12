@@ -20,7 +20,7 @@ exports.getIndex = (req, res, next) => {
   Product.find().then((product) => {
     //console.log(product);
     res.render("shop/index", { product, pageTitle: "Home page", path: "/" ,isAuthenticated:req.session.isLoggedIn});
-  });
+  }).catch(err=>{return next(new Error(err));})
 };
 exports.getProduct = (req, res, next) => {
  
@@ -37,7 +37,10 @@ exports.getProduct = (req, res, next) => {
         
       });
     })
-    .catch((err) => console.log(err, "fetching"));
+    .catch((err) => {console.log(err, "fetching")
+    return next(new Error(err));}
+    
+    );
 };
 
 exports.getCart = (req, res, next) => {
@@ -62,7 +65,10 @@ exports.getCart = (req, res, next) => {
         isAuthenticated:req.session.isLoggedIn
       });
     })
-    .catch((err) => console.log(err, "Getting cart data"));
+    .catch((err) =>{ console.log(err, "Getting cart data")
+    return next(new Error(err));
+  
+  });
 };
 
 exports.postCart = (req, res, next) => {
@@ -73,8 +79,11 @@ exports.postCart = (req, res, next) => {
   req.user.addToCart(productId).then((ris) => {
     console.log("Aded to cart successsfully");
     res.redirect("/cart");
-  });
+  }).catch(err=>{
+    return next(new Error(err));
+  })
 };
+//error not handled
 exports.postOrders = (req, res, next) => {
   console.log("MID  POST ORDERS");
   req.user
@@ -119,7 +128,8 @@ exports.getOrders = (req, res, next) => {
         isAuthenticated:req.session.isLoggedIn
       });
     })
-    .catch((err) => console.log(err, "getting order data"));
+    .catch((err) =>{ console.log(err, "getting order data")
+    return next(new Error(err));});
 };
 exports.getCheckout = (req, res, next) => {
   
@@ -137,10 +147,12 @@ exports.postDEletefromcart = (req, res, next) => {
       console.log("Deleted cart successfully");
       res.redirect("/cart");
     })
-    .catch((err) => console.log(err, "Deleting Cart"));
+    .catch((err) =>{ console.log(err, "Deleting Cart")
+    return next(new Error(err));});
 };
 
 exports.cartUpdate=  (req,res,next)=>{
+  
   const cartId=req.user.cartProductExist()
   Product.find().select('_id').then(async ris=>{
     console.log(cartId)
@@ -161,6 +173,8 @@ exports.cartUpdate=  (req,res,next)=>{
     next()
     
     
+  }).catch(err=>{
+    return next(new Error(err));
   })
   
   
