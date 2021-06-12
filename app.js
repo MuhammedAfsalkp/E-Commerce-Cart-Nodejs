@@ -19,7 +19,8 @@ const URI= 'mongodb://127.0.0.1:27017/shop'
 const csrfProtection=csrf()
 const store= new Mongostore({
     uri:URI,
-    collection:"session"
+    collection:"session",
+    
 })
 
 app.set("view engine", "ejs");
@@ -33,7 +34,9 @@ app.use(session({
     secret:'secret key',
     resave:false,
     saveUninitialized:false,
-    store:store
+    store:store,
+    
+    
 }))
 app.use(csrfProtection)
 app.use(flash())

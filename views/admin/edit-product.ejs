@@ -9,22 +9,29 @@
 
 
             <main>
+                <% if(errorMessage) { %> 
+                    <div  class="user-message user-message-error"><%= errorMessage %> </div>
+                    <% } %> 
                 <form class="product-form" action="/admin/edit-product" method="POST">
                     <div class="form-control">
                         <label for="title">Title</label>
-                        <input type="text" name="product" id="title" value="<%= product.title %>">
+                        <input class="<%=(invalid=='Title')?"invalid":""%>"
+                        type="text" name="product" id="title" value="<%=(oldInput.title)?oldInput.title:product.title %>">
                     </div>
                     <div class="form-control">
                         <label for="imageurl">Image URL</label>
-                        <input type="text" name="imageurl" id="imageurl" value="<%= product.imageurl %>">
+                        <input class="<%=(invalid=='Imageurl')?"invalid":""%>"
+                        type="text" name="imageurl" id="imageurl" value="<%=(oldInput.imageurl)?oldInput.imageurl:product.imageurl %>">
                     </div>
                     <div class="form-control">
                         <label for="price">Price</label>
-                        <input type="number" name="price" id="price" step="0.01" value="<%= product.price %>">
+                        <input class="<%=(invalid=='Price')?"invalid":""%>"
+                        type="number" name="price" id="price" step="0.01" value="<%=(oldInput.price)?oldInput.price:product.price %>">
                     </div>
                     <div class="form-control">
                         <label for="description">Description</label>
-                        <textarea name="description" id="description" rows="5"> <%= product.description %></textarea>
+                        <textarea class="<%=(invalid=='Description')?"invalid":""%>"
+                        name="description" id="description" rows="5"><%=(oldInput.description)?oldInput.description:product.description %></textarea>
                     </div>
 
                            <!-- for csrf protection -->

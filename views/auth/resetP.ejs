@@ -10,13 +10,13 @@
 
             <main>
                 <% if(errorMessage) { %> 
-                    <div  class="user-message user-message-error"><%= errorMessage %> </div>
+                    <div  class="user-message "><%= errorMessage %> </div>
                     <% } %> 
                  
                 <form class="login-form" action="/reset" method="POST">
                     <div class="form-control">
                         <label for="email">E-MAIL</label>
-                        <input type="email" name="email" id="email">
+                        <input type="email" name="email" id="email" value="<%=oldInput.email%> ">
                     </div>
                    
                          <!-- for csrf protection -->

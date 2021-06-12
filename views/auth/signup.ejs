@@ -15,15 +15,18 @@
                 <form class="login-form" action="/signup" method="POST">
                     <div class="form-control">
                         <label for="email">E-MAIL</label>
-                        <input type="email" name="email" id="email">
+                        <input class="<%= (invalid=='Email')?"invalid":""  %> "
+                        type="email" name="email" id="email" value=<%=oldInput.email%> >
                     </div>
                     <div class="form-control">
                         <label for="password">Password</label>
-                        <input type="password" name="password" id="password">
+                        <input class="<%= (invalid=='Password')?"invalid":""  %> "
+                        type="password" name="password" id="password" value=<%=oldInput.password%>>
                     </div>
                     <div class="form-control">
                         <label for="confirmPassword">Confirm Password</label>
-                        <input type="password" name="confirm Password" id="confirmPassword">
+                        <input class="<%= (invalid=='Confirm')?"invalid":""  %> "
+                         type="password" name="confirmPassword" id="confirmPassword" value=<%=oldInput.confirmPassword%>>
                     </div>
                          <!-- for csrf protection -->
                          <input type="hidden" name="_csrf" value="<%=csrfToken%>">

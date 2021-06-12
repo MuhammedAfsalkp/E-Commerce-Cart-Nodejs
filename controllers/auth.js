@@ -1,6 +1,7 @@
 const User=require('../models/user')
 const crypto=require('crypto')
 const bcrypt=require('bcryptjs')
+const {validationResult}=require('express-validator')
 const nodeMailer=require('nodemailer')
 const sendGridTransport=require('nodemailer-sendgrid-transport')
 
@@ -17,13 +18,19 @@ const transporter=nodeMailer.createTransport(sendGridTransport({
 }))
 
 exports.getLogin = (req, res, next) =>{
-    // cause error after this it become null after it used inconsole.log(req.flash('error'))
+    let oldInput=(req.session.oldInput)?req.session.oldInput:{email: '',password:''}
+    req.session.oldInput=null;
     let message=req.flash('error')
+    let invalid;
     
     if(message.length >0){
         message=message[0]
+        if(message.includes('Email')){ console.log("Email") ;   invalid='Email'     }
+        if(message.includes('Password')){ console.log("Password") ;    invalid='Password'     }
+        
     }else{
-        message=null
+        message=null;
+        invalid=null;
     }
   
     console.log("MID GET LOGIN");
@@ -33,7 +40,9 @@ exports.getLogin = (req, res, next) =>{
           pageTitle: "Login",
           path: "/login",
           isAuthenticated:req.session.isLoggedIn,
-          errorMessage:message
+          errorMessage:message,
+          oldInput,
+          invalid
           
         });
       
@@ -43,42 +52,28 @@ exports.postLogin =async  (req, res, next) => {
     console.log("MID POST LOGIN",req.body);
     const email=req.body.email;
     const password=req.body.password
+    const oldInput={email,password}
+    let arr=validationResult(req).array()
+    console.log(arr)
+    if(arr.length > 0){
+        req.flash('error',`${arr[0].msg}`)
+        req.session.oldInput=oldInput
+        return req.session.save(err=>{
+            
+            res.redirect("/login")
+        })
+    }
     try{
     const user=await User.findOne({email:email})
     console.log(user)
-    if(!user){
-        console.log("Email Does not exists !!")
-        req.flash('error' , 'Email is not registerd !!!')
-        return req.session.save(err=>{
-            res.redirect("/login")
-
-        })
-        
-    }
-    else{
-        console.log(user.password)
-        const match= await bcrypt.compare(password,user.password)
-        if(!match){
-            req.flash('error','Invalid Password!!')
-            return req.session.save(err=>{
-                console.log("In correct password")
-             res.redirect("/login")
-
-            })
-            
-        }
-        req.session.isLoggedIn=true;
-        req.session.user=user
-        return req.session.save(err=>{
+    req.session.oldInput=null;
+    req.session.isLoggedIn=true;
+    req.session.user=user
+    return req.session.save(err=>{
             console.log(req.session)
              res.redirect("/")
 
         })
-        
-        
-
-
-    }
     }catch(err){
         console.log(err,"login")
     }
@@ -98,14 +93,24 @@ exports.postLogout = (req, res, next) => {
 
 exports.getSignup = (req,res,next)=>{
     let message=req.flash('error')
-    if(message.length >0){
-        message=message[0]
+    let invalid=null;
+    let oldInput=(req.session.oldInput)? req.session.oldInput: {email:'',password:'',confirmPassword:''}
+    req.session.oldInput=null
+    console.log(oldInput)
+    if(message.length >0 ){
+        message=message[0];
+        if(message.includes('Email')){ console.log("Email") ;   invalid='Email'     }
+        if(message.includes('Password')){ console.log("Password") ;    invalid='Password'     }
+         if(message.includes('Confirm')){    console.log("Confirm") ; invalid='Confirm'     }
+        
     }else{
-        message=null
+        message=null;
+        invalid=null
+        
     }
-
+     console.log(invalid,message)
     res.render('auth/signup',{path:'/signup',errorMessage:message,
-    pageTitle:'signup',isAuthenticated:false
+    pageTitle:'signup',isAuthenticated:false,oldInput,invalid
 })
 
 
@@ -114,19 +119,25 @@ exports.getSignup = (req,res,next)=>{
 
     
 exports.postSignup =async (req,res,next)=>{
-    console.log("post signup mid",req.body)
     const email=req.body.email
     const password=req.body.password
+    const confirmPassword=req.body.confirmPassword
+    const oldInput={email,password,confirmPassword}
+    
+  
+    console.log("post signup mid",req.body)
+    let arr=validationResult(req).array()
+    console.log(arr)
+    if(arr.length > 0){
+        req.flash('error',`${arr[0].msg}`)
+        req.session.oldInput=oldInput
+        return req.session.save(err=>{
+            res.redirect("/signup")
+        })
+    }
+    
+    
     try{
-        User.findOne({email:email},async (err,user)=>{
-            if(user){
-                req.flash('error','Email exists already!!,Enter different Email.')
-                return req.session.save(err=>{
-                    console.log("existing email")
-                 res.redirect("/signup")
-                })
-                
-            }
             const hashPaasword= await bcrypt.hash(password,12)
             const us=new User({
                 email:email,
@@ -148,8 +159,7 @@ exports.postSignup =async (req,res,next)=>{
 
             }).catch(err=>console.log(err,"signing user"))
             
-
-        })
+        
 
     }catch(err){
         console.log(err,"post signup")
@@ -161,6 +171,9 @@ exports.postSignup =async (req,res,next)=>{
 
 
 exports.getResetPassword=(req,res,next)=>{
+    let oldInput=(req.session.oldInput)?req.session.oldInput:{email:''}
+    req.session.oldInput=null;
+    console.log(oldInput)
     let message=req.flash('error')
     if(message.length > 0){
         message=message[0]
@@ -171,7 +184,8 @@ exports.getResetPassword=(req,res,next)=>{
         pageTitle: "Reset password",
         path: "/reset",
         isAuthenticated:req.session.isLoggedIn,
-        errorMessage:message
+        errorMessage:message,
+        oldInput
         
         
       });
@@ -179,25 +193,33 @@ exports.getResetPassword=(req,res,next)=>{
 }
 
 exports.postResetPassword=async (req,res,next)=>{
+    
+    const email=req.body.email;
+    const oldInput={email}
+
+    let arr=validationResult(req).array()
+    console.log(arr)
+    if(arr.length > 0){
+        req.flash('error',`${arr[0].msg}`)
+        req.session.oldInput=oldInput
+        return req.session.save(err=>{
+           
+            res.redirect("/reset")
+        })
+    }
     try{
         let tokenBuffer= await crypto.randomBytes(32)
         const token=tokenBuffer.toString('hex')
-        const email=req.body.email;
-        User.findOne({email:email},async (err,user)=>{
-           if(!user){
-            console.log(err,"Email doesnt exist for resetting passwod")
-            req.flash('error','This Email is not registerd!!')
-            return req.session.save(ris=>{
-                res.redirect('/reset')
-            })
-        }
+
+        let user=await User.findOne({email:email})
+        
            console.log("email exist..update",user)
            user.resetToken= token;
            user.tokenExpiration=Date.now()+3600000;
            await user.save()
            console.log("saved user successfullly",user)
-           res.redirect("/")
-           transporter.sendMail({
+           //res.redirect("/")
+           await transporter.sendMail({
             to:email,
             from:'af-shopingcart@afsolutions.xyz',
             subject:'Password Reset',
@@ -208,17 +230,21 @@ exports.postResetPassword=async (req,res,next)=>{
             `
 
            })
-
-
-
-
-
-
-    })
+           console.log("Email sent")
+           req.flash('error' ,`The reset link has been send to ${email} `)
+           return req.session.save(err=>{
+               res.redirect("/reset")
+           })
+           
+    
     }catch(err){
-        
+        console.log("Email cant send")
         console.log(err,"post reset password")
-        res.redirect("/reset")
+        req.flash('error' ,`The  ${email} is not valid or Error in Email server`)
+        req.session.oldInput=oldInput
+           return req.session.save(err=>{
+               res.redirect("/reset")
+           })
     }
     
 }
@@ -226,13 +252,13 @@ exports.postResetPassword=async (req,res,next)=>{
 exports.getNewPassword= async (req,res,next)=>{
     try{
         console.log("Get new password")
-    let message;
-    const token=req.params.token
-    console.log(token)
-    User.findOne({resetToken:token,tokenExpiration:{$gt:Date.now()}},async (err,user)=>{
+        let message;
+        const token=req.params.token
+       console.log(token)
+       User.findOne({resetToken:token,tokenExpiration:{$gt:Date.now()}},async (err,user)=>{
         if(!user){
             console.log("No user with such restToken...check")
-            req.flash('error','Token expired!!..retry.')
+            req.flash('error','Token expired!!or Token malformed')
             return req.session.save(err=>{
                 console.log("flash saved")
                 res.redirect("/err")
@@ -252,7 +278,8 @@ exports.getNewPassword= async (req,res,next)=>{
             path: "/newPassword",
             userId:user._id,
             isAuthenticated:req.session.isLoggedIn,
-            errorMessage:message
+            errorMessage:message,
+            token:token
 
     })
   
@@ -268,6 +295,16 @@ exports.getNewPassword= async (req,res,next)=>{
 }
 exports.postNewPassword=async (req,res,next)=>{
     console.log("Post new password",req.body)
+    const token=req.body.token
+    let arr=validationResult(req).array()
+    console.log(arr)
+    if(arr.length > 0){
+        req.flash('error',`${arr[0].msg}`)
+        return req.session.save(err=>{
+            res.redirect(`reset/${token}`)
+        })
+    }
+    
     const password=req.body.password;
     const hashpassword=await bcrypt.hash(password,12)
     const userId=req.body.userId
@@ -275,7 +312,10 @@ exports.postNewPassword=async (req,res,next)=>{
         console.log(user)
         if(!user || err){
             console.log(err)
-            return res.redirect("/")
+            req.flash('error',`user not found  error:-${err}`)
+            return req.session.save(err=>{
+                res.redirect(`reset/${token}`)
+            })
 
         }
         user.password=hashpassword;
