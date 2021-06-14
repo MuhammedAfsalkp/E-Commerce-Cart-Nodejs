@@ -1,5 +1,6 @@
 const Product = require("../models/product");
 const { validationResult } = require("express-validator");
+const {deleteFile}=require('../Utils/file')
 
 exports.getAddproduct = (req, res, next) => {
   console.log("MID admin GET add-product");
@@ -7,7 +8,7 @@ exports.getAddproduct = (req, res, next) => {
   let message = req.flash("error");
   let oldInput = req.session.oldInput
     ? req.session.oldInput
-    : { title: "", imageurl: "", price: "", description: "" };
+    : { title: "",  price: "", description: "" };
   req.session.oldInput = null;
   console.log(message);
   if (message.length > 0) {
@@ -47,8 +48,8 @@ exports.postAddproduct = async (req, res, next) => {
     const price = req.body.price;
     const description = req.body.description;
     const userId = req.user._id;
-    const imageurl=image.path;
-    const oldInput = { title, imageurl, price, description };
+    
+    const oldInput = { title,  price, description };
     console.log(image)
     if(!image){
       req.flash("error", `Select Image`);
@@ -57,7 +58,7 @@ exports.postAddproduct = async (req, res, next) => {
         res.redirect(`/admin/add-product`);
       });
     }
-    // const imageurl=image.path;
+     const imageurl=image.path;
 
     let arr = validationResult(req).array();
     console.log(arr);
@@ -168,6 +169,7 @@ exports.postEditproduct = async (req, res, next) => {
     }
     product.title = title;
     if(image){
+      await deleteFile(product.imageurl)
       product.imageurl=image.path
     }
     product.description = description;
@@ -213,11 +215,15 @@ exports.getProducts = (req, res, next) => {
     });
 };
 
-exports.postDeleteproduct = (req, res, next) => {
+exports.postDeleteproduct = async (req, res, next) => {
+  try{
   console.log("MID Post delete product");
+  
   const productID = req.body.productId;
-  Product.deleteOne({ _id: productID, userId: req.user._id })
-    .then((ris) => {
+  let product=await Product.findById(productID)
+  await deleteFile(product.imageurl)
+  
+   const ris=await  Product.deleteOne({ _id: productID, userId: req.user._id })
       //nothing matched
       if (ris.deletedCount == 0) {
         req.flash("error", "You are not authorized to Delete this product");
@@ -228,8 +234,7 @@ exports.postDeleteproduct = (req, res, next) => {
 
       console.log("Deleted", ris);
       res.redirect("/admin/products");
-    })
-    .catch((err) => {
+  }catch(err) {
       console.log(err, "deleting");
       req.flash("error", `${err}`);
       req.session.save((e) => {
@@ -238,5 +243,5 @@ exports.postDeleteproduct = (req, res, next) => {
         }
         res.redirect("/500");
       });
-    });
+    }
 };

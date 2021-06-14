@@ -107,3 +107,21 @@ border-color: rgb(207, 72, 72);
 background: rgb(202, 159, 159);
 color: rgb(10, 9, 8);
 }
+.pagination{
+  text-align: center;
+  margin-top: 2rem;
+}
+.pagination a{
+  text-decoration: none;
+  color:darkcyan;
+  padding: 0.5rem;
+  border: 1px solid darkcyan;
+  margin: 0 1rem;
+
+}
+.pagination a:hover,
+.pagination a:active,
+.pagination a.active{
+  background-color: darkcyan;
+  color:white
+}

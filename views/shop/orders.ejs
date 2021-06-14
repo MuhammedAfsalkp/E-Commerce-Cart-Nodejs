@@ -12,6 +12,7 @@
                         <% for(let x of order){ %>
                             <div>
                                 <ul><h2>Order #<%=x._id%></h2>
+                                    <li ><a target="_blank" href="/order/<%= x._id%>">Invoice</a></li>
                                 </ul>
                                 <% x.items.forEach(prod=>{ %>
                                     <ul style="text-align: center;">
@@ -23,10 +24,10 @@
                                        <h4> Quantity:<%=prod.quantity%></h4>
                                     </ul>
                                     <l1 style="text-align: center;">
-                                       <h3 style="color: blue;" >$ <%=prod.price%></h3>
+                                       <h3 style="color: blue;" > $<%=prod.product.price%></h3>
                                     </l1>
                                     <l1><img src="/<%= prod.product.imageurl  %> "></l1>
-                                    <li><a target="_blank" href="/order/<%= x._id%>">Invoice</a></li>
+                                    
                                     
                                     <% }) %>
                                     <hr>
