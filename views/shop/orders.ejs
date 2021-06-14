@@ -25,7 +25,8 @@
                                     <l1 style="text-align: center;">
                                        <h3 style="color: blue;" >$ <%=prod.price%></h3>
                                     </l1>
-                                    <l1><img src="<%= prod.product.imageurl  %> "></l1>
+                                    <l1><img src="/<%= prod.product.imageurl  %> "></l1>
+                                    <li><a target="_blank" href="/order/<%= x._id%>">Invoice</a></li>
                                     
                                     <% }) %>
                                     <hr>

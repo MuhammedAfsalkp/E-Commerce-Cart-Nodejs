@@ -12,17 +12,22 @@
                 <% if(errorMessage) { %> 
                     <div  class="user-message user-message-error"><%= errorMessage %> </div>
                     <% } %> 
-                <form class="product-form" action="/admin/edit-product" method="POST">
+                <form class="product-form" action="/admin/edit-product" method="POST" enctype="multipart/form-data">
                     <div class="form-control">
                         <label for="title">Title</label>
                         <input class="<%=(invalid=='Title')?"invalid":""%>"
                         type="text" name="product" id="title" value="<%=(oldInput.title)?oldInput.title:product.title %>">
                     </div>
-                    <div class="form-control">
+                    <!-- <div class="form-control">
                         <label for="imageurl">Image URL</label>
                         <input class="<%=(invalid=='Imageurl')?"invalid":""%>"
                         type="text" name="imageurl" id="imageurl" value="<%=(oldInput.imageurl)?oldInput.imageurl:product.imageurl %>">
+                    </div> -->
+                    <div class="form-control">
+                        <label for="image">Image</label>
+                        <input type="file" name="image" id="image" >
                     </div>
+
                     <div class="form-control">
                         <label for="price">Price</label>
                         <input class="<%=(invalid=='Price')?"invalid":""%>"

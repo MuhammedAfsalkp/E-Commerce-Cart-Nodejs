@@ -15,6 +15,7 @@ router.post("/orders",isAuth,shopController.postOrders)
 router.get("/checkout",isAuth,shopController.getCheckout)
 router.post("/delete-fromcart",isAuth,shopController.postDEletefromcart)
 router.get("/updatecart",isAuth,shopController.cartUpdate)
+router.get("/order/:orderId",isAuth,shopController.getInvoice)
 
 
 

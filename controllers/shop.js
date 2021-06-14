@@ -1,5 +1,7 @@
 const Product = require("../models/product");
 const Order = require("../models/order");
+const fs=require('fs')
+const path=require('path')
 exports.getProducts = (req, res, next) => {
   
   console.log("MID PRODUCTLIST");
@@ -44,12 +46,14 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
+  
  
   console.log("MID CART");
   req.user
     .populate("cart.items.productId")
     .execPopulate()
     .then((data) => {
+     
       console.log(data);
       console.log(data.cart.items);
       let price=0;
@@ -66,7 +70,8 @@ exports.getCart = (req, res, next) => {
       });
     })
     .catch((err) =>{ console.log(err, "Getting cart data")
-    return next(new Error(err));
+    // return next(new Error(err));
+    return next(err)
   
   });
 };
@@ -178,4 +183,51 @@ exports.cartUpdate=  (req,res,next)=>{
   })
   
   
+}
+
+exports.getInvoice=async (req,res,next)=>{
+  try{
+  console.log("Mid get invoice",req.params.orderId)
+
+  const orderId=req.params.orderId;
+  const order= await Order.findById(orderId)
+
+  if(order.user.userId.toString() != req.user._id.toString()){
+    return next(new Error('Unauthorized'))
+  }
+   //const invoiceFile='invoice-'+orderId+'.pdf'
+   const invoiceName='sample.pdf'
+   const invoicePath=path.join('data','invoices',invoiceName)
+   console.log(invoicePath)
+   
+   //for small files 
+  // fs.readFile(invoicePath,(err,data)=>{
+  //   if(err){
+  //     return next(err)
+  //   } 
+  //   res.setHeader('Content-Type', 'application/pdf') 
+  //   res.setHeader('Content-Disposition','inline; filename=" '+ invoiceFile+ '"')
+  //   res.end(data)
+  // })
+
+  //large files -storage efficiency
+  const file=fs.createReadStream(invoicePath)
+   res.setHeader('Content-Type', 'application/pdf') 
+   res.setHeader('Content-Disposition','inline; filename=" '+ invoiceName + '"')
+   file.pipe(res)
+
+   //more safe is 
+//  res.sendFile(invoicePath,{root:'.'})
+
+  
+
+
+
+}catch(err){
+  return next(err)
+}
+
+
+
+
 }

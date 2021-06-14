@@ -145,9 +145,9 @@ exports.validateAddProduct=[
     .withMessage("Title should contain minimum 5 characters!")
     .bail(),
     
-    check('imageurl')
-    .isURL()
-    .withMessage("Imageurl should be valid"),
+    // check('imageurl')
+    // .isURL()
+    // .withMessage("Imageurl should be valid"),
 
     check('price')
     .exists()
