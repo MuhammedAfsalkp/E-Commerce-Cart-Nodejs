@@ -215,11 +215,11 @@ exports.getProducts = (req, res, next) => {
     });
 };
 
-exports.postDeleteproduct = async (req, res, next) => {
+exports.deleteDeleteproduct = async (req, res, next) => {
   try{
-  console.log("MID Post delete product");
+  console.log("MID Delete delete product");
   
-  const productID = req.body.productId;
+  const productID = req.params.productId;
   let product=await Product.findById(productID)
   await deleteFile(product.imageurl)
   
@@ -233,15 +233,16 @@ exports.postDeleteproduct = async (req, res, next) => {
       }
 
       console.log("Deleted", ris);
-      res.redirect("/admin/products");
+      res.status(200).json({message:"success"})
   }catch(err) {
       console.log(err, "deleting");
-      req.flash("error", `${err}`);
-      req.session.save((e) => {
-        if (e) {
-          next(new Error(err));
-        }
-        res.redirect("/500");
-      });
-    }
+       res.status(500).json({message:"failed"})
+    //   req.flash("error", `${err}`);
+    //   req.session.save((e) => {
+    //     if (e) {
+    //       next(new Error(err));
+    //     }
+    //     res.redirect("/500");
+    //   });
+     }
 };
